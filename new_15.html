@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Resource Library</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #8BC34A;
+            --dark-color: #2E7D32;
+            --light-color: #E8F5E9;
+            --accent-color: #FFC107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            position: relative;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        nav {
+            background-color: var(--dark-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 1rem 0;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            padding: 1rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .resource-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .resource-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-icon {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+        
+        .card-body p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .topic-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .topic-list li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .topic-list li:before {
+            content: "•";
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: var(--dark-color);
+        }
+        
+        .search-container {
+            background-color: var(--light-color);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .resource-details {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            padding: 2rem;
+        }
+        
+        .resource-details h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .resource-details h3 {
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        .resource-details ul {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .resource-details ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .active-section {
+            display: block;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                position: absolute;
+                right: 0;
+                top: 100%;
+                flex-direction: column;
+                background-color: var(--dark-color);
+                width: 100%;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s;
+            }
+            
+            .nav-links.show {
+                max-height: 300px;
+            }
+            
+            .hamburger {
+                display: block;
+                color: white;
+                font-size: 1.5rem;
+                padding: 1rem;
+            }
+            
+            .resource-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Farmer Resource Library</h1>
+            <p>Comprehensive knowledge hub for sustainable and successful farming</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="nav-container">
+            <div class="logo">FarmGuide</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#" class="nav-item" onclick="return false;">Home</a></li>
+                <li><a href="#" class="nav-item" onclick="return false;">About</a></li>
+                <li><a href="#" class="nav-item" onclick="return false;">Contact</a></li>
+                <li><a href="#" class="nav-item" onclick="return false;">Login</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">☰</div>
+        </div>
+    </nav>
+    
+    <main>
+        <div class="search-container">
+            <h2>Search Resources</h2>
+            <p>Find specific information on farming techniques, crop management, subsidies, and more</p>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search resources...">
+                <button class="btn">Search</button>
+            </div>
+        </div>
+        
+        <div class="resource-container" id="resourceContainer">
+            <div class="resource-card" data-section="fertilizer">
+                <div class="card-header">
+                    <h2>Fertilizer Usage Guide</h2>
+                    <div class="card-icon">🌱</div>
+                </div>
+                <div class="card-body">
+                    <p>Learn which fertilizers work best for different crops and soil conditions to maximize your yield.</p>
+                    <ul class="topic-list">
+                        <li>Organic vs. Inorganic Fertilizers</li>
+                        <li>Crop-Specific Fertilizer Recommendations</li>
+                        <li>Soil Testing and Analysis</li>
+                        <li>Sustainable Fertilization Practices</li>
+                    </ul>
+                    <button class="btn view-resource" data-target="fertilizer">View Guide</button>
+                </div>
+            </div>
+            
+            <div class="resource-card" data-section="irrigation">
+                <div class="card-header">
+                    <h2>Irrigation Techniques</h2>
+                    <div class="card-icon">💧</div>
+                </div>
+                <div class="card-body">
+                    <p>Discover efficient irrigation methods for different crops and climate conditions.</p>
+                    <ul class="topic-list">
+                        <li>Drip Irrigation Systems</li>
+                        <li>Sprinkler Irrigation Methods</li>
+                        <li>Rainwater Harvesting</li>
+                        <li>Water Conservation Strategies</li>
+                    </ul>
+                    <button class="btn view-resource" data-target="irrigation">View Guide</button>
+                </div>
+            </div>
+            
+            <div class="resource-card" data-section="soil">
+                <div class="card-header">
+                    <h2>Crop-Specific Soil Management</h2>
+                    <div class="card-icon">🌿</div>
+                </div>
+                <div class="card-body">
+                    <p>Techniques tailored to improve soil health for specific crops and maximize production.</p>
+                    <ul class="topic-list">
+                        <li>Soil pH Adjustment Methods</li>
+                        <li>Micronutrient Management</li>
+                        <li>Crop Rotation Strategies</li>
+                        <li>Preventing Soil Erosion</li>
+                    </ul>
+                    <button class="btn view-resource" data-target="soil">View Guide</button>
+                </div>
+            </div>
+            
+            <div class="resource-card" data-section="organic">
+                <div class="card-header">
+                    <h2>Organic Farming Techniques</h2>
+                    <div class="card-icon">🍃</div>
+                </div>
+                <div class="card-body">
+                    <p>Comprehensive guidance on organic farming methods and certification processes.</p>
+                    <ul class="topic-list">
+                        <li>Natural Pest Control</li>
+                        <li>Organic Certification Process</li>
+                        <li>Composting and Green Manure</li>
+                        <li>Biodiversity Management</li>
+                    </ul>
+                    <button class="btn view-resource" data-target="organic">View Guide</button>
+                </div>
+            </div>
+            
+            <div class="resource-card" data-section="government">
+                <div class="card-header">
+                    <h2>Government Schemes and Subsidies</h2>
+                    <div class="card-icon">📝</div>
+                </div>
+                <div class="card-body">
+                    <p>Information on available farming subsidies, grants, and government support programs.</p>
+                    <ul class="topic-list">
+                        <li>Agricultural Loans and Subsidies</li>
+                        <li>Equipment Purchase Programs</li>
+                        <li>Irrigation Development Schemes</li>
+                        <li>Crop Insurance Programs</li>
+                    </ul>
+                    <button class="btn view-resource" data-target="government">View Guide</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resource Details Sections -->
+        <div id="fertilizerSection" class="resource-details">
+            <a href="#" class="back-btn" onclick="hideAllSections(); return false;">← Back to Resources</a>
+            <h2>Fertilizer Usage Guide</h2>
+            
+            <h3>Organic vs. Inorganic Fertilizers</h3>
+            <p>Choosing between organic and inorganic fertilizers depends on your farming goals, soil conditions, and environmental considerations:</p>
+            <ul>
+                <li><strong>Organic Fertilizers:</strong> Made from plant or animal sources, these release nutrients slowly and improve soil structure. Examples include compost, manure, bone meal, and fish emulsion.</li>
+                <li><strong>Inorganic Fertilizers:</strong> Synthetically manufactured to provide precise nutrient ratios. They work quickly but don't improve soil structure. Examples include ammonium nitrate, potassium chloride, and superphosphate.</li>
+            </ul>
+            
+            <h3>Crop-Specific Fertilizer Recommendations</h3>
+            <ul>
+                <li><strong>Leafy Vegetables:</strong> High nitrogen fertilizers promote leaf growth. NPK ratio around 3-1-2 is ideal.</li>
+                <li><strong>Root Vegetables:</strong> Phosphorus-heavy fertilizers help root development. NPK ratio around 1-2-2 works well.</li>
+                <li><strong>Fruit-Bearing Plants:</strong> Potassium-rich fertilizers enhance fruit production. NPK ratio around 1-1-3 is recommended.</li>
+                <li><strong>Grains:</strong> Balanced NPK fertilizers with micronutrients like zinc are beneficial.</li>
+            </ul>
+            
+            <h3>Soil Testing and Analysis</h3>
+            <p>Before applying fertilizers, conduct soil tests to determine:</p>
+            <ul>
+                <li>Soil pH level (optimal range varies by crop)</li>
+                <li>Current nutrient levels (NPK, secondary nutrients, micronutrients)</li>
+                <li>Organic matter content</li>
+                <li>Soil texture and structure</li>
+            </ul>
+            
+            <h3>Sustainable Fertilization Practices</h3>
+            <ul>
+                <li><strong>Split Application:</strong> Apply fertilizers in multiple smaller doses throughout the growing season.</li>
+                <li><strong>Precision Farming:</strong> Use technology to apply fertilizers only where needed.</li>
+                <li><strong>Cover Crops:</strong> Plant nitrogen-fixing crops like legumes to naturally enrich soil.</li>
+                <li><strong>Crop Rotation:</strong> Alternate crops with different nutrient needs to prevent soil depletion.</li>
+            </ul>
+        </div>
+        
+        <div id="irrigationSection" class="resource-details">
+            <a href="#" class="back-btn" onclick="hideAllSections(); return false;">← Back to Resources</a>
+            <h2>Irrigation Techniques</h2>
+            
+            <h3>Drip Irrigation Systems</h3>
+            <p>Drip irrigation delivers water directly to plant roots, minimizing waste and maximizing efficiency:</p>
+            <ul>
+                <li><strong>Benefits:</strong> Water savings up to 60%, reduced weed growth, decreased disease pressure</li>
+                <li><strong>Best For:</strong> Row crops, orchards, vineyards, greenhouse production</li>
+                <li><strong>Components:</strong> Water source, filters, pressure regulators, tubing, emitters</li>
+                <li><strong>Maintenance:</strong> Regular flushing of lines, checking for clogs, inspecting filters</li>
+            </ul>
+            
+            <h3>Sprinkler Irrigation Methods</h3>
+            <ul>
+                <li><strong>Center Pivot Systems:</strong> Ideal for large, flat fields. Water is distributed through rotating sprinklers on elevated pipes.</li>
+                <li><strong>Fixed Sprinklers:</strong> Good for small to medium fields. Provides uniform coverage for most field crops.</li>
+                <li><strong>Micro-Sprinklers:</strong> Combines benefits of drip and sprinkler systems. Good for tree crops and orchards.</li>
+            </ul>
+            
+            <h3>Rainwater Harvesting</h3>
+            <p>Collecting and storing rainwater for agricultural use:</p>
+            <ul>
+                <li><strong>Collection Methods:</strong> Rooftop systems, surface runoff collection, small check dams</li>
+                <li><strong>Storage Options:</strong> Tanks, ponds, underground cisterns</li>
+                <li><strong>Treatment:</strong> Filtration, UV treatment (if necessary)</li>
+                <li><strong>Distribution:</strong> Gravity-fed systems or pumps for irrigation</li>
+            </ul>
+            
+            <h3>Water Conservation Strategies</h3>
+            <ul>
+                <li><strong>Soil Moisture Sensors:</strong> Monitor soil moisture to irrigate only when necessary</li>
+                <li><strong>Mulching:</strong> Reduces evaporation and maintains soil moisture</li>
+                <li><strong>Deficit Irrigation:</strong> Strategic under-irrigation during less critical growth stages</li>
+                <li><strong>Irrigation Scheduling:</strong> Watering during early morning or evening to reduce evaporation</li>
+            </ul>
+        </div>
+        
+        <div id="soilSection" class="resource-details">
+            <a href="#" class="back-btn" onclick="hideAllSections(); return false;">← Back to Resources</a>
+            <h2>Crop-Specific Soil Management</h2>
+            
+            <h3>Soil pH Adjustment Methods</h3>
+            <p>Different crops require specific pH ranges for optimal growth:</p>
+            <ul>
+                <li><strong>Raising pH (Acidic Soils):</strong> Apply agricultural lime or wood ash. Most vegetables prefer a pH of 6.0-7.0.</li>
+                <li><strong>Lowering pH (Alkaline Soils):</strong> Add organic matter, sulfur, or aluminum sulfate. Blueberries, potatoes, and strawberries prefer acidic soils (pH 4.5-6.0).</li>
+                <li><strong>Buffering Capacity:</strong> Clay and organic-rich soils require more amendments to change pH than sandy soils.</li>
+            </ul>
+            
+            <h3>Micronutrient Management</h3>
+            <ul>
+                <li><strong>Iron:</strong> Critical for chlorophyll production. Deficiency common in alkaline soils.</li>
+                <li><strong>Zinc:</strong> Essential for corn, rice, and beans. Apply zinc sulfate when deficient.</li>
+                <li><strong>Boron:</strong> Important for cell wall formation. Brassicas and root crops have high boron requirements.</li>
+                <li><strong>Manganese:</strong> Vital for photosynthesis. Soybeans and wheat are sensitive to manganese deficiency.</li>
+            </ul>
+            
+            <h3>Crop Rotation Strategies</h3>
+            <p>Rotating crops prevents soil nutrient depletion and breaks pest cycles:</p>
+            <ul>
+                <li><strong>Legume Rotation:</strong> Include nitrogen-fixing crops like beans or clover to enrich soil.</li>
+                <li><strong>Heavy Feeders to Light Feeders:</strong> Follow nutrient-demanding crops (corn, tomatoes) with less demanding ones (beans, peas).</li>
+                <li><strong>Root Depth Variation:</strong> Alternate deep-rooted crops with shallow-rooted ones to utilize different soil layers.</li>
+            </ul>
+            
+            <h3>Preventing Soil Erosion</h3>
+            <ul>
+                <li><strong>Contour Farming:</strong> Plowing across slopes rather than up and down.</li>
+                <li><strong>Cover Crops:</strong> Plant rye, clover, or vetch during off-seasons to protect soil.</li>
+                <li><strong>No-Till Farming:</strong> Minimizes soil disturbance, preserves structure and organic matter.</li>
+                <li><strong>Buffer Strips:</strong> Permanent vegetation along waterways prevents runoff and erosion.</li>
+            </ul>
+        </div>
+        
+        <div id="organicSection" class="resource-details">
+            <a href="#" class="back-btn" onclick="hideAllSections(); return false;">← Back to Resources</a>
+            <h2>Organic Farming Techniques</h2>
+            
+            <h3>Natural Pest Control</h3>
+            <p>Managing pests without synthetic chemicals:</p>
+            <ul>
+                <li><strong>Beneficial Insects:</strong> Introduce ladybugs, lacewings, and predatory mites to control harmful pests.</li>
+                <li><strong>Companion Planting:</strong> Grow plants that repel pests or attract beneficial insects (marigolds, basil, dill).</li>
+                <li><strong>Biological Controls:</strong> Use Bacillus thuringiensis (Bt), neem oil, and insecticidal soaps.</li>
+                <li><strong>Physical Barriers:</strong> Implement row covers, sticky traps, and diatomaceous earth.</li>
+            </ul>
+            
+            <h3>Organic Certification Process</h3>
+            <ul>
+                <li><strong>Transition Period:</strong> Land must be free from prohibited substances for 3 years.</li>
+                <li><strong>Organic System Plan:</strong> Create detailed documentation of farming practices.</li>
+                <li><strong>Inspection:</strong> Annual on-site evaluation by certified inspectors.</li>
+                <li><strong>Record Keeping:</strong> Maintain comprehensive records of all inputs, activities, and sales.</li>
+                <li><strong>Certification Agencies:</strong> Work with USDA-accredited certifiers or equivalent national authorities.</li>
+            </ul>
+            
+            <h3>Composting and Green Manure</h3>
+            <p>Building soil fertility naturally:</p>
+            <ul>
+                <li><strong>Compost Creation:</strong> Balance carbon-rich (brown) and nitrogen-rich (green) materials in a 30:1 ratio.</li>
+                <li><strong>Compost Tea:</strong> Brew aerated compost extracts to apply microbes directly to plants.</li>
+                <li><strong>Green Manure Crops:</strong> Grow cover crops like clover, vetch, or buckwheat to till into soil.</li>
+                <li><strong>Vermicomposting:</strong> Use worms to create nutrient-rich castings for soil amendment.</li>
+            </ul>
+            
+            <h3>Biodiversity Management</h3>
+            <ul>
+                <li><strong>Polyculture:</strong> Grow multiple crops together to minimize pest problems and maximize space.</li>
+                <li><strong>Hedgerows and Borders:</strong> Plant native species to provide habitat for beneficial insects and birds.</li>
+                <li><strong>Crop Diversity:</strong> Cultivate various crop families to spread risk and enhance soil health.</li>
+                <li><strong>Rotational Grazing:</strong> Move livestock regularly to prevent overgrazing and distribute manure naturally.</li>
+            </ul>
+        </div>
+        
+        <div id="governmentSection" class="resource-details">
+            <a href="#" class="back-btn" onclick="hideAllSections(); return false;">← Back to Resources</a>
+            <h2>Government Schemes and Subsidies</h2>
+            
+            <h3>Agricultural Loans and Subsidies</h3>
+            <p>Financial assistance programs for farmers:</p>
+            <ul>
+                <li><strong>Kisan Credit Card (KCC):</strong> Provides short-term credit for cultivation expenses with subsidized interest rates.</li>
+                <li><strong>Interest Subvention Scheme:</strong> Offers interest relief on crop loans to farmers who repay promptly.</li>
+                <li><strong>Micro Irrigation Fund:</strong> Provides financial assistance for expanding coverage of micro-irrigation systems.</li>
+                <li><strong>Agricultural Infrastructure Fund:</strong> Long-term debt financing for post-harvest management infrastructure.</li>
+            </ul>
+            
+            <h3>Equipment Purchase Programs</h3>
+            <ul>
+                <li><strong>Farm Mechanization Subsidy:</strong> Up to 50% subsidy on purchase of various agricultural machinery and equipment.</li>
+                <li><strong>Custom Hiring Centers:</strong> Government support for establishing centers where farmers can rent equipment.</li>
+                <li><strong>Solar Pump Subsidy:</strong> Financial assistance for installation of solar-powered irrigation pumps.</li>
+                <li><strong>Small Farmer Mechanization Program:</strong> Special subsidies for small and marginal farmers.</li>
+            </ul>
+            
+            <h3>Irrigation Development Schemes</h3>
+            <p>Programs to enhance irrigation infrastructure:</p>
+            <ul>
+                <li><strong>Pradhan Mantri Krishi Sinchayee Yojana (PMKSY):</strong> Aims to achieve convergence of investments in irrigation.</li>
+                <li><strong>Per Drop More Crop:</strong> Promotes precision irrigation technologies with subsidies up to 55%.</li>
+                <li><strong>Watershed Development Programs:</strong> Community-based approach to water conservation and management.</li>
+                <li><strong>Minor Irrigation Scheme:</strong> Supports creation of small irrigation structures like ponds and wells.</li>
+            </ul>
+            
+            <h3>Crop Insurance Programs</h3>
+            <ul>
+                <li><strong>Pradhan Mantri Fasal Bima Yojana (PMFBY):</strong> Comprehensive crop insurance at minimal premium rates.</li>
+                <li><strong>Weather Based Crop Insurance Scheme (WBCIS):</strong> Insurance based on adverse weather conditions rather than crop damage.</li>
+                <li><strong>Coconut Palm Insurance Scheme:</strong> Specific insurance for coconut cultivators.</li>
+                <li><strong>Unified Package Insurance Scheme:</strong> Combines multiple insurance needs of farmers under one policy.</li>
+            </ul>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 FarmGuide | Farmer Resource Library</p>
+            <div class="footer-links">
+                <a href="#" onclick="return false;">Privacy Policy</a>
+                <a href="#" onclick="return false;">Terms of Service</a>
+                <a href="#" onclick="return false;">Contact Us</a>
+                <a href="#" onclick="return false;">FAQ</a>
+            </div>
+            <p>Designed to help farmers access vital information for sustainable and successful farming practices.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Toggle navigation for mobile
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('show');
+        });
+        
+        // Resource section display
+        const viewButtons = document.querySelectorAll('.view-resource');
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                hideAllSections();
+                document.getElementById(target + 'Section').classList.add('active-section');
+                document.getElementById('resourceContainer').style.display = 'none';
+            });
+        });
+        
+        function hideAllSections() {
+            document.querySelectorAll('.resource-details').forEach(section => {
+                section.classList.remove('active-section');
+            });
+            document.getElementById('resourceContainer').style.display = 'grid';
+        }
+        
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        const searchButton = searchInput.nextElementSibling;
+        const resourceCards = document.querySelectorAll('.resource-card');
+        
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            if (searchTerm.trim() === '') {
+                resourceCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+            
+            resourceCards.forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Allow search on enter key
+        searchInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+    </script>
+</body>
+</html>

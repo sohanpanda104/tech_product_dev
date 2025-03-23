@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Monitoring - Alerts & Recommendations</title>
+    <style>
+        :root {
+            --primary-color: #3a7d44;
+            --secondary-color: #6ab04c;
+            --accent-color: #f39c12;
+            --danger-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --info-color: #3498db;
+            --success-color: #2ecc71;
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .actions button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        .actions button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            height: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            font-size: 20px;
+        }
+
+        .badge {
+            background-color: var(--info-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .alert-list {
+            list-style: none;
+        }
+
+        .alert-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-item.critical {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .alert-item.warning {
+            background-color: rgba(241, 196, 15, 0.1);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .alert-item.info {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--info-color);
+        }
+
+        .alert-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .alert-icon.critical {
+            background-color: var(--danger-color);
+        }
+
+        .alert-icon.warning {
+            background-color: var(--warning-color);
+        }
+
+        .alert-icon.info {
+            background-color: var(--info-color);
+        }
+
+        .alert-content {
+            flex-grow: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .alert-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .recommendation-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .recommendation-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-icon {
+            color: var(--success-color);
+        }
+
+        .recommendation-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .recommendation-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .apply-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .more-info-btn {
+            background-color: transparent;
+            border: 1px solid var(--info-color);
+            color: var(--info-color);
+        }
+
+        .dismiss-btn {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .health-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .health-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .health-indicator.good {
+            background-color: var(--success-color);
+        }
+
+        .health-indicator.fair {
+            background-color: var(--warning-color);
+        }
+
+        .health-indicator.poor {
+            background-color: var(--danger-color);
+        }
+
+        /* Icons using material symbols */
+        .material-symbols {
+            font-family: 'Arial';
+            font-weight: normal;
+            font-style: normal;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🌱</div>
+            <div class="logo-text">SoilSense</div>
+        </div>
+        <div class="actions">
+            <button id="refresh-data">Refresh Data</button>
+            <button id="settings">Settings</button>
+        </div>
+    </header>
+
+    <h1 class="page-title">Alerts & Recommendations</h1>
+
+    <div class="dashboard">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">⚠️</span>
+                    <span>Active Alerts</span>
+                </div>
+                <span class="badge" id="alert-count">3</span>
+            </div>
+            <ul class="alert-list" id="alerts-container">
+                <!-- Alert items will be populated by JavaScript -->
+            </ul>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">💡</span>
+                    <span>Recommendations</span>
+                </div>
+                <span class="badge" id="recommendation-count">2</span>
+            </div>
+            <div id="recommendations-container">
+                <!-- Recommendation items will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data - In a real application, this would come from an API
+        const soilData = {
+            pH: 5.2,
+            moisture: 22,
+            nutrients: {
+                nitrogen: 35,
+                phosphorus: 15,
+                potassium: 42,
+                iron: 8,
+                calcium: 30
+            },
+            lastUpdated: new Date()
+        };
+
+        // Define ideal ranges
+        const idealRanges = {
+            pH: { min: 6.0, max: 7.5 },
+            moisture: { min: 40, max: 70 },
+            nutrients: {
+                nitrogen: { min: 40, max: 80 },
+                phosphorus: { min: 20, max: 60 },
+                potassium: { min: 40, max: 80 },
+                iron: { min: 10, max: 30 },
+                calcium: { min: 40, max: 100 }
+            }
+        };
+
+        // Generate alerts based on soil data
+        function generateAlerts() {
+            const alerts = [];
+
+            // Check pH
+            if (soilData.pH < idealRanges.pH.min) {
+                alerts.push({
+                    type: 'critical',
+                    icon: '🧪',
+                    title: 'Low pH Level',
+                    description: `Soil pH is ${soilData.pH}, which is too acidic. Ideal range is ${idealRanges.pH.min}-${idealRanges.pH.max}.`,
+                    timestamp: new Date()
+                });
+            } else if (soilData.pH > idealRanges.pH.max) {
+                alerts.push({
+                    type: 'critical',
+                    icon: '🧪',
+                    title: 'High pH Level',
+                    description: `Soil pH is ${soilData.pH}, which is too alkaline. Ideal range is ${idealRanges.pH.min}-${idealRanges.pH.max}.`,
+                    timestamp: new Date()
+                });
+            }
+
+            // Check moisture
+            if (soilData.moisture < idealRanges.moisture.min) {
+                alerts.push({
+                    type: 'critical',
+                    icon: '💧',
+                    title: 'Low Moisture Level',
+                    description: `Soil moisture is ${soilData.moisture}%, which is too dry. Ideal range is ${idealRanges.moisture.min}%-${idealRanges.moisture.max}%.`,
+                    timestamp: new Date()
+                });
+            } else if (soilData.moisture > idealRanges.moisture.max) {
+                alerts.push({
+                    type: 'warning',
+                    icon: '💧',
+                    title: 'High Moisture Level',
+                    description: `Soil moisture is ${soilData.moisture}%, which is too wet. Ideal range is ${idealRanges.moisture.min}%-${idealRanges.moisture.max}%.`,
+                    timestamp: new Date()
+                });
+            }
+
+            // Check nutrients
+            for (const [nutrient, value] of Object.entries(soilData.nutrients)) {
+                const range = idealRanges.nutrients[nutrient];
+                if (value < range.min) {
+                    alerts.push({
+                        type: 'warning',
+                        icon: '🌿',
+                        title: `Low ${nutrient.charAt(0).toUpperCase() + nutrient.slice(1)} Level`,
+                        description: `${nutrient.charAt(0).toUpperCase() + nutrient.slice(1)} level is ${value}, which is below the ideal range of ${range.min}-${range.max}.`,
+                        timestamp: new Date()
+                    });
+                }
+            }
+
+            return alerts;
+        }
+
+        // Generate recommendations based on soil data and alerts
+        function generateRecommendations() {
+            const recommendations = [];
+
+            // pH recommendations
+            if (soilData.pH < idealRanges.pH.min) {
+                recommendations.push({
+                    icon: '🧪',
+                    title: 'Apply Lime to Increase pH',
+                    description: 'Adding agricultural lime can help raise your soil pH. Apply 5-10 pounds per 100 square feet and retest after 3-4 weeks.',
+                    products: ['Agricultural Lime', 'Dolomitic Lime'],
+                    timestamp: new Date()
+                });
+            } else if (soilData.pH > idealRanges.pH.max) {
+                recommendations.push({
+                    icon: '🧪',
+                    title: 'Add Sulfur to Decrease pH',
+                    description: 'Adding elemental sulfur can help lower your soil pH. Apply 1-2 pounds per 100 square feet and retest after 3-4 weeks.',
+                    products: ['Elemental Sulfur', 'Aluminum Sulfate'],
+                    timestamp: new Date()
+                });
+            }
+
+            // Moisture recommendations
+            if (soilData.moisture < idealRanges.moisture.min) {
+                recommendations.push({
+                    icon: '💧',
+                    title: 'Increase Watering Schedule',
+                    description: 'Your soil is too dry. Increase watering frequency and consider adding mulch to help retain moisture.',
+                    products: ['Organic Mulch', 'Drip Irrigation System'],
+                    timestamp: new Date()
+                });
+            } else if (soilData.moisture > idealRanges.moisture.max) {
+                recommendations.push({
+                    icon: '💧',
+                    title: 'Improve Drainage',
+                    description: 'Your soil is too wet. Consider adding drainage solutions and reducing watering frequency.',
+                    products: ['Perlite', 'Drainage Pipes'],
+                    timestamp: new Date()
+                });
+            }
+
+            // Nutrient recommendations
+            for (const [nutrient, value] of Object.entries(soilData.nutrients)) {
+                const range = idealRanges.nutrients[nutrient];
+                if (value < range.min) {
+                    let fertilizerType = '';
+                    let application = '';
+
+                    switch (nutrient) {
+                        case 'nitrogen':
+                            fertilizerType = 'Nitrogen-rich fertilizer (high first number in NPK rating)';
+                            application = '2-3 pounds per 100 square feet';
+                            break;
+                        case 'phosphorus':
+                            fertilizerType = 'Phosphorus-rich fertilizer (high middle number in NPK rating)';
+                            application = '1-2 pounds per 100 square feet';
+                            break;
+                        case 'potassium':
+                            fertilizerType = 'Potassium-rich fertilizer (high last number in NPK rating)';
+                            application = '1-2 pounds per 100 square feet';
+                            break;
+                        case 'iron':
+                            fertilizerType = 'Iron supplements or chelated iron';
+                            application = 'As directed on package';
+                            break;
+                        case 'calcium':
+                            fertilizerType = 'Calcium supplements or gypsum';
+                            application = '2-3 pounds per 100 square feet';
+                            break;
+                    }
+
+                    recommendations.push({
+                        icon: '🌿',
+                        title: `Add ${nutrient.charAt(0).toUpperCase() + nutrient.slice(1)} to Soil`,
+                        description: `Your soil is deficient in ${nutrient}. Apply ${fertilizerType} at ${application} to increase levels.`,
+                        products: [fertilizerType, 'Organic Compost'],
+                        timestamp: new Date()
+                    });
+                }
+            }
+
+            return recommendations;
+        }
+
+        // Render alerts in the UI
+        function renderAlerts() {
+            const alertsContainer = document.getElementById('alerts-container');
+            const alertCount = document.getElementById('alert-count');
+            const alerts = generateAlerts();
+
+            alertsContainer.innerHTML = '';
+            alertCount.textContent = alerts.length;
+
+            if (alerts.length === 0) {
+                alertsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <p>No active alerts at this time</p>
+                    </div>
+                `;
+                return;
+            }
+
+            alerts.forEach(alert => {
+                const alertElement = document.createElement('li');
+                alertElement.className = `alert-item ${alert.type}`;
+                alertElement.innerHTML = `
+                    <div class="alert-icon ${alert.type}">${alert.icon}</div>
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-description">${alert.description}</div>
+                        <div class="health-status">
+                            <div class="health-indicator ${alert.type === 'critical' ? 'poor' : alert.type === 'warning' ? 'fair' : 'good'}"></div>
+                            <span>${alert.type === 'critical' ? 'Poor' : alert.type === 'warning' ? 'Fair' : 'Good'}</span>
+                        </div>
+                    </div>
+                `;
+                alertsContainer.appendChild(alertElement);
+            });
+        }
+
+        // Render recommendations in the UI
+        function renderRecommendations() {
+            const recommendationsContainer = document.getElementById('recommendations-container');
+            const recommendationCount = document.getElementById('recommendation-count');
+            const recommendations = generateRecommendations();
+
+            recommendationsContainer.innerHTML = '';
+            recommendationCount.textContent = recommendations.length;
+
+            if (recommendations.length === 0) {
+                recommendationsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👍</div>
+                        <p>No recommendations at this time</p>
+                    </div>
+                `;
+                return;
+            }
+
+            recommendations.forEach(recommendation => {
+                const recommendationElement = document.createElement('div');
+                recommendationElement.className = 'recommendation-item';
+                
+                // Create products list
+                const productsList = recommendation.products.map(product => `<li>${product}</li>`).join('');
+                
+                recommendationElement.innerHTML = `
+                    <div class="recommendation-title">
+                        <span class="recommendation-icon">${recommendation.icon}</span>
+                        <span>${recommendation.title}</span>
+                    </div>
+                    <div class="recommendation-description">${recommendation.description}</div>
+                    <div class="recommendation-products">
+                        <strong>Suggested Products:</strong>
+                        <ul>${productsList}</ul>
+                    </div>
+                    <div class="recommendation-actions">
+                        <button class="apply-btn">✓ Apply</button>
+                        <button class="more-info-btn">ℹ️ More Info</button>
+                        <button class="dismiss-btn">× Dismiss</button>
+                    </div>
+                `;
+                recommendationsContainer.appendChild(recommendationElement);
+            });
+
+            // Add event listeners for buttons
+            document.querySelectorAll('.apply-btn, .more-info-btn, .dismiss-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.className.split('-')[0];
+                    const recommendationItem = this.closest('.recommendation-item');
+                    const title = recommendationItem.querySelector('.recommendation-title').textContent.trim();
+                    
+                    if (action === 'dismiss') {
+                        recommendationItem.remove();
+                        const newCount = document.querySelectorAll('.recommendation-item').length;
+                        document.getElementById('recommendation-count').textContent = newCount;
+                        
+                        if (newCount === 0) {
+                            recommendationsContainer.innerHTML = `
+                                <div class="empty-state">
+                                    <div class="empty-icon">👍</div>
+                                    <p>No recommendations at this time</p>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // In a real app, you would handle these actions appropriately
+                        alert(`${action.charAt(0).toUpperCase() + action.slice(1)} action triggered for: ${title}`);
+                    }
+                });
+            });
+        }
+
+        // Initialize the dashboard
+        function initDashboard() {
+            renderAlerts();
+            renderRecommendations();
+            
+            // Add event listener for refresh button
+            document.getElementById('refresh-data').addEventListener('click', function() {
+                // In a real app, you would fetch new data here
+                soilData.lastUpdated = new Date();
+                renderAlerts();
+                renderRecommendations();
+                alert('Data refreshed successfully!');
+            });
+            
+            // Add event listener for settings button
+            document.getElementById('settings').addEventListener('click', function() {
+                alert('Settings page would open here');
+            });
+        }
+
+        // Start the application
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

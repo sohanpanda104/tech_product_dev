@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Weather Forecast</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f0f2f5;
+      padding: 20px;
+      color: #333;
+    }
+    
+    header {
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .location-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    
+    .location-info i {
+      margin-right: 10px;
+      color: #3498db;
+    }
+    
+    .current-conditions {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    .current-main {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .current-temp {
+      font-size: 64px;
+      font-weight: 300;
+      margin-right: 20px;
+    }
+    
+    .current-icon {
+      font-size: 80px;
+      margin-right: 20px;
+    }
+    
+    .current-details {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .current-info {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+    }
+    
+    .info-item i {
+      margin-right: 10px;
+      color: #7f8c8d;
+      font-size: 20px;
+    }
+    
+    .weekly-forecast {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .forecast-card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+    
+    .forecast-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .forecast-header {
+      background-color: #3498db;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .forecast-day {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .forecast-date {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .forecast-body {
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .forecast-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .forecast-temp {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .temp-range {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    
+    .temp-max, .temp-min {
+      display: flex;
+      align-items: center;
+      margin: 0 10px;
+    }
+    
+    .temp-max i, .temp-min i {
+      margin-right: 5px;
+    }
+    
+    .temp-max {
+      color: #e74c3c;
+    }
+    
+    .temp-min {
+      color: #3498db;
+    }
+    
+    .forecast-details {
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .forecast-detail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .detail-value {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .detail-label {
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+    
+    .chart-container {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .chart-tabs {
+      display: flex;
+    }
+    
+    .chart-tab {
+      padding: 8px 16px;
+      margin-left: 5px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      border: none;
+      background-color: #f0f2f5;
+    }
+    
+    .chart-tab.active {
+      background-color: #3498db;
+      color: white;
+    }
+    
+    canvas {
+      width: 100%;
+      height: 300px;
+    }
+    
+    @media (max-width: 768px) {
+      .current-main, .current-details {
+        flex: 100%;
+      }
+      
+      .current-main {
+        margin-bottom: 20px;
+      }
+    }
+    
+    /* Weather icons using emoji for simplicity */
+    .icon {
+      font-style: normal;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Weekly Weather Forecast</h1>
+    <div class="location-info">
+      <i class="icon">📍</i>
+      <span id="location">Loading location...</span>
+    </div>
+    <div id="last-updated">Last updated: Loading...</div>
+  </header>
+  
+  <div class="current-conditions">
+    <div class="current-main">
+      <div class="current-temp" id="current-temp">--°</div>
+      <div class="current-icon" id="current-icon">⛅</div>
+      <div>
+        <div id="current-condition">Loading...</div>
+        <div id="current-day">Today</div>
+      </div>
+    </div>
+    <div class="current-details">
+      <h3>Current Details</h3>
+      <div class="current-info">
+        <div class="info-item">
+          <i class="icon">🌡️</i>
+          <div>
+            <div>Feels like</div>
+            <div id="feels-like">--°</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="icon">💧</i>
+          <div>
+            <div>Humidity</div>
+            <div id="humidity">--%</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="icon">🌬️</i>
+          <div>
+            <div>Wind</div>
+            <div id="wind">-- km/h</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="icon">🌧️</i>
+          <div>
+            <div>Chance of Rain</div>
+            <div id="rain-chance">--%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="chart-container">
+    <div class="chart-header">
+      <h3 class="chart-title">7-Day Forecast Comparison</h3>
+      <div class="chart-tabs">
+        <button class="chart-tab active" data-type="temperature">Temperature</button>
+        <button class="chart-tab" data-type="rainfall">Rainfall</button>
+        <button class="chart-tab" data-type="wind">Wind Speed</button>
+      </div>
+    </div>
+    <canvas id="forecast-chart"></canvas>
+  </div>
+  
+  <div class="weekly-forecast" id="weekly-forecast">
+    <!-- Forecast cards will be inserted here -->
+  </div>
+  
+  <!-- Chart.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  
+  <script>
+    // Mock weather data generation
+    function generateWeatherData() {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const weatherConditions = [
+        { condition: 'Sunny', icon: '☀️' },
+        { condition: 'Partly Cloudy', icon: '⛅' },
+        { condition: 'Cloudy', icon: '☁️' },
+        { condition: 'Rainy', icon: '🌧️' },
+        { condition: 'Thunderstorm', icon: '⛈️' },
+        { condition: 'Windy', icon: '💨' }
+      ];
+      
+      const forecast = [];
+      const today = new Date();
+      
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        
+        const dayName = days[date.getDay()];
+        const dateFormatted = date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric' 
+        });
+        
+        // Random weather condition
+        const weatherIndex = Math.floor(Math.random() * weatherConditions.length);
+        const weather = weatherConditions[weatherIndex];
+        
+        // Random temperatures based on condition
+        let tempMax, tempMin, rainfall, windSpeed;
+        
+        switch (weather.condition) {
+          case 'Sunny':
+            tempMax = 25 + Math.random() * 7;
+            tempMin = tempMax - (5 + Math.random() * 3);
+            rainfall = Math.random() * 1;
+            windSpeed = 5 + Math.random() * 5;
+            break;
+          case 'Partly Cloudy':
+            tempMax = 22 + Math.random() * 5;
+            tempMin = tempMax - (4 + Math.random() * 4);
+            rainfall = Math.random() * 2;
+            windSpeed = 8 + Math.random() * 7;
+            break;
+          case 'Cloudy':
+            tempMax = 18 + Math.random() * 5;
+            tempMin = tempMax - (3 + Math.random() * 3);
+            rainfall = Math.random() * 5;
+            windSpeed = 10 + Math.random() * 8;
+            break;
+          case 'Rainy':
+            tempMax = 16 + Math.random() * 4;
+            tempMin = tempMax - (2 + Math.random() * 4);
+            rainfall = 10 + Math.random() * 20;
+            windSpeed = 12 + Math.random() * 10;
+            break;
+          case 'Thunderstorm':
+            tempMax = 14 + Math.random() * 5;
+            tempMin = tempMax - (3 + Math.random() * 3);
+            rainfall = 25 + Math.random() * 30;
+            windSpeed = 20 + Math.random() * 15;
+            break;
+          case 'Windy':
+            tempMax = 17 + Math.random() * 6;
+            tempMin = tempMax - (4 + Math.random() * 3);
+            rainfall = Math.random() * 8;
+            windSpeed = 30 + Math.random() * 20;
+            break;
+          default:
+            tempMax = 20 + Math.random() * 5;
+            tempMin = tempMax - (5 + Math.random() * 3);
+            rainfall = Math.random() * 5;
+            windSpeed = 10 + Math.random() * 10;
+        }
+        
+        forecast.push({
+          day: dayName,
+          date: dateFormatted,
+          condition: weather.condition,
+          icon: weather.icon,
+          tempMax: tempMax,
+          tempMin: tempMin,
+          tempCurrent: i === 0 ? tempMax - Math.random() * (tempMax - tempMin) : null,
+          rainfall: rainfall,
+          windSpeed: windSpeed,
+          humidity: 40 + Math.random() * 40,
+          rainChance: Math.min(100, rainfall * 5 + Math.random() * 20)
+        });
+      }
+      
+      return forecast;
+    }
+    
+    // Initialize weather data
+    const weatherData = generateWeatherData();
+    let currentChart;
+    
+    // Update current weather display
+    function updateCurrentWeather() {
+      const current = weatherData[0];
+      
+      document.getElementById('location').textContent = 'Your Garden Location';
+      document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+      document.getElementById('current-temp').textContent = `${Math.round(current.tempCurrent)}°`;
+      document.getElementById('current-icon').textContent = current.icon;
+      document.getElementById('current-condition').textContent = current.condition;
+      document.getElementById('current-day').textContent = `Today, ${current.date}`;
+      
+      document.getElementById('feels-like').textContent = `${Math.round(current.tempCurrent - 1 + Math.random() * 2)}°`;
+      document.getElementById('humidity').textContent = `${Math.round(current.humidity)}%`;
+      document.getElementById('wind').textContent = `${Math.round(current.windSpeed)} km/h`;
+      document.getElementById('rain-chance').textContent = `${Math.round(current.rainChance)}%`;
+    }
+    
+    // Render weekly forecast cards
+    function renderWeeklyForecast() {
+      const container = document.getElementById('weekly-forecast');
+      container.innerHTML = '';
+      
+      weatherData.forEach((day, index) => {
+        const card = document.createElement('div');
+        card.className = 'forecast-card';
+        
+        card.innerHTML = `
+          <div class="forecast-header">
+            <div class="forecast-day">${index === 0 ? 'Today' : day.day}</div>
+            <div class="forecast-date">${day.date}</div>
+          </div>
+          <div class="forecast-body">
+            <div class="forecast-icon">${day.icon}</div>
+            <div class="forecast-temp">${Math.round(index === 0 ? day.tempCurrent : (day.tempMax + day.tempMin) / 2)}°</div>
+            <div class="temp-range">
+              <div class="temp-max">
+                <i class="icon">⬆️</i> ${Math.round(day.tempMax)}°
+              </div>
+              <div class="temp-min">
+                <i class="icon">⬇️</i> ${Math.round(day.tempMin)}°
+              </div>
+            </div>
+            <div class="forecast-details">
+              <div class="forecast-detail">
+                <div class="detail-value">${day.rainfall.toFixed(1)} mm</div>
+                <div class="detail-label">Rainfall</div>
+              </div>
+              <div class="forecast-detail">
+                <div class="detail-value">${Math.round(day.windSpeed)} km/h</div>
+                <div class="detail-label">Wind Speed</div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        container.appendChild(card);
+      });
+    }
+    
+    // Create chart
+    function createChart(type = 'temperature') {
+      const ctx = document.getElementById('forecast-chart').getContext('2d');
+      
+      const labels = weatherData.map((day, index) => index === 0 ? 'Today' : day.day);
+      
+      let data, label, borderColor, backgroundColor, yAxisLabel;
+      
+      switch (type) {
+        case 'temperature':
+          data = weatherData.map(day => (day.tempMax + day.tempMin) / 2);
+          label = 'Temperature (°C)';
+          borderColor = '#e67e22';
+          backgroundColor = 'rgba(230, 126, 34, 0.2)';
+          yAxisLabel = 'Temperature (°C)';
+          break;
+        case 'rainfall':
+          data = weatherData.map(day => day.rainfall);
+          label = 'Rainfall (mm)';
+          borderColor = '#3498db';
+          backgroundColor = 'rgba(52, 152, 219, 0.2)';
+          yAxisLabel = 'Rainfall (mm)';
+          break;
+        case 'wind':
+          data = weatherData.map(day => day.windSpeed);
+          label = 'Wind Speed (km/h)';
+          borderColor = '#95a5a6';
+          backgroundColor = 'rgba(149, 165, 166, 0.2)';
+          yAxisLabel = 'Wind Speed (km/h)';
+          break;
+      }
+      
+      // Destroy existing chart if it exists
+      if (currentChart) {
+        currentChart.destroy();
+      }
+      
+      currentChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: label,
+            data: data,
+            borderColor: borderColor,
+            backgroundColor: backgroundColor,
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: type === 'rainfall',
+              title: {
+                display: true,
+                text: yAxisLabel
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Initialize the page
+    function initPage() {
+      updateCurrentWeather();
+      renderWeeklyForecast();
+      createChart('temperature');
+      
+      // Add event listeners to chart tabs
+      document.querySelectorAll('.chart-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Update active tab
+          document.querySelectorAll('.chart-tab').forEach(t => {
+            t.classList.remove('active');
+          });
+          tab.classList.add('active');
+          
+          // Update chart
+          createChart(tab.dataset.type);
+        });
+      });
+    }
+    
+    // Initialize when page loads
+    window.addEventListener('load', initPage);
+  </script>
+</body>
+</html>

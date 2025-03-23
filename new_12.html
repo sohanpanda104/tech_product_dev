@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Soil Monitoring Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      padding: 20px;
+      color: #333;
+    }
+    
+    header {
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .card-header i {
+      margin-right: 10px;
+      font-size: 24px;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .reading-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .status {
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    
+    .status.optimal {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .status.warning {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    
+    .status.danger {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    .charts-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    @media (min-width: 992px) {
+      .charts-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .chart-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .chart-header {
+      margin-bottom: 15px;
+    }
+    
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+    
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .nutrient-levels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    
+    .nutrient {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .nutrient-value {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .nutrient-label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .icon-blue { color: #3498db; }
+    .icon-purple { color: #9b59b6; }
+    .icon-green { color: #2ecc71; }
+    .icon-orange { color: #e67e22; }
+    
+    /* Custom icons using emoji for simplicity */
+    .icon {
+      font-style: normal;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Real-Time Soil Monitoring Dashboard</h1>
+    <p>Last updated: <span id="last-updated">Loading...</span></p>
+  </header>
+  
+  <div class="dashboard-container">
+    <!-- Soil Moisture Card -->
+    <div class="card">
+      <div class="card-header">
+        <i class="icon icon-blue">💧</i>
+        <h2 class="card-title">Soil Moisture</h2>
+      </div>
+      <div class="reading-value" id="moisture-value">--.--%</div>
+      <div class="status" id="moisture-status">Analyzing...</div>
+    </div>
+    
+    <!-- pH Level Card -->
+    <div class="card">
+      <div class="card-header">
+        <i class="icon icon-purple">🧪</i>
+        <h2 class="card-title">pH Level</h2>
+      </div>
+      <div class="reading-value" id="ph-value">-.-</div>
+      <div class="status" id="ph-status">Analyzing...</div>
+    </div>
+    
+    <!-- Temperature Card -->
+    <div class="card">
+      <div class="card-header">
+        <i class="icon icon-orange">🌡️</i>
+        <h2 class="card-title">Temperature</h2>
+      </div>
+      <div class="reading-value" id="temp-value">--.-°C</div>
+      <div id="day-night-indicator">Day/Night: --</div>
+    </div>
+    
+    <!-- Nutrient Levels Card -->
+    <div class="card">
+      <div class="card-header">
+        <i class="icon icon-green">🌱</i>
+        <h2 class="card-title">Nutrient Levels</h2>
+      </div>
+      <div class="nutrient-levels">
+        <div class="nutrient">
+          <div class="nutrient-value" id="nitrogen-value">-- ppm</div>
+          <div class="nutrient-label">Nitrogen (N)</div>
+        </div>
+        <div class="nutrient">
+          <div class="nutrient-value" id="phosphorus-value">-- ppm</div>
+          <div class="nutrient-label">Phosphorus (P)</div>
+        </div>
+        <div class="nutrient">
+          <div class="nutrient-value" id="potassium-value">-- ppm</div>
+          <div class="nutrient-label">Potassium (K)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="charts-container">
+    <!-- Moisture & pH Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">Moisture & pH History</h3>
+      </div>
+      <div class="chart-container">
+        <canvas id="moisture-ph-chart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Temperature Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">Temperature History (24h)</h3>
+      </div>
+      <div class="chart-container">
+        <canvas id="temperature-chart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Chart.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  
+  <script>
+    // Mock data generation
+    function generateMockData(hoursCount = 24) {
+      const data = [];
+      const now = new Date();
+      
+      for (let i = 0; i < hoursCount; i++) {
+        const time = new Date(now);
+        time.setHours(now.getHours() - (hoursCount - 1) + i);
+        
+        const isDaytime = time.getHours() >= 6 && time.getHours() <= 18;
+        
+        data.push({
+          time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          moisture: 25 + Math.random() * 30,
+          pH: 6 + Math.random() * 1.5,
+          nitrogen: 10 + Math.random() * 20,
+          phosphorus: 5 + Math.random() * 15,
+          potassium: 15 + Math.random() * 25,
+          temperature: isDaytime ? 22 + Math.random() * 8 : 15 + Math.random() * 5,
+          isDaytime: isDaytime
+        });
+      }
+      
+      return data;
+    }
+    
+    // Initialize mock data and display elements
+    let soilData = generateMockData();
+    let currentReading = soilData[soilData.length - 1];
+    
+    // Charts setup
+    let moisturePhChart;
+    let temperatureChart;
+    
+    function initCharts() {
+      const timeLabels = soilData.map(d => d.time);
+      const moistureData = soilData.map(d => d.moisture);
+      const phData = soilData.map(d => d.pH);
+      const temperatureData = soilData.map(d => d.temperature);
+      const dayNightData = soilData.map(d => d.isDaytime);
+      
+      // Moisture & pH Chart
+      const mpCtx = document.getElementById('moisture-ph-chart').getContext('2d');
+      moisturePhChart = new Chart(mpCtx, {
+        type: 'line',
+        data: {
+          labels: timeLabels,
+          datasets: [
+            {
+              label: 'Moisture (%)',
+              data: moistureData,
+              borderColor: '#3498db',
+              backgroundColor: 'rgba(52, 152, 219, 0.1)',
+              yAxisID: 'y',
+              fill: true,
+              tension: 0.3
+            },
+            {
+              label: 'pH Level',
+              data: phData,
+              borderColor: '#9b59b6',
+              backgroundColor: 'rgba(155, 89, 182, 0.1)',
+              yAxisID: 'y1',
+              fill: true,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          scales: {
+            y: {
+              type: 'linear',
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Moisture (%)'
+              },
+              min: 0,
+              max: 60
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              title: {
+                display: true,
+                text: 'pH Level'
+              },
+              min: 5,
+              max: 9,
+              grid: {
+                drawOnChartArea: false
+              }
+            }
+          }
+        }
+      });
+      
+      // Temperature Chart
+      const tempCtx = document.getElementById('temperature-chart').getContext('2d');
+      
+      // Create background colors for day/night
+      const backgroundColors = dayNightData.map(isDaytime => 
+        isDaytime ? 'rgba(255, 193, 7, 0.2)' : 'rgba(78, 93, 148, 0.2)'
+      );
+      
+      temperatureChart = new Chart(tempCtx, {
+        type: 'line',
+        data: {
+          labels: timeLabels,
+          datasets: [{
+            label: 'Temperature (°C)',
+            data: temperatureData,
+            borderColor: '#e67e22',
+            backgroundColor: backgroundColors,
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: 'Temperature (°C)'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: true
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const dataPoint = context.dataIndex;
+                  const isDaytime = dayNightData[dataPoint];
+                  return [
+                    `Temperature: ${context.parsed.y.toFixed(1)}°C`,
+                    `Time: ${isDaytime ? 'Day' : 'Night'}`
+                  ];
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Update dashboard with current readings
+    function updateDashboard() {
+      // Update timestamp
+      document.getElementById('last-updated').textContent = new Date().toLocaleString();
+      
+      // Update moisture
+      const moistureValue = document.getElementById('moisture-value');
+      const moistureStatus = document.getElementById('moisture-status');
+      moistureValue.textContent = `${currentReading.moisture.toFixed(1)}%`;
+      
+      if (currentReading.moisture < 20) {
+        moistureStatus.textContent = 'Status: Dry';
+        moistureStatus.className = 'status danger';
+      } else if (currentReading.moisture > 45) {
+        moistureStatus.textContent = 'Status: Wet';
+        moistureStatus.className = 'status warning';
+      } else {
+        moistureStatus.textContent = 'Status: Optimal';
+        moistureStatus.className = 'status optimal';
+      }
+      
+      // Update pH
+      const phValue = document.getElementById('ph-value');
+      const phStatus = document.getElementById('ph-status');
+      phValue.textContent = currentReading.pH.toFixed(1);
+      
+      if (currentReading.pH < 6.0) {
+        phStatus.textContent = 'Status: Acidic';
+        phStatus.className = 'status warning';
+      } else if (currentReading.pH > 7.5) {
+        phStatus.textContent = 'Status: Alkaline';
+        phStatus.className = 'status warning';
+      } else {
+        phStatus.textContent = 'Status: Optimal';
+        phStatus.className = 'status optimal';
+      }
+      
+      // Update temperature
+      const tempValue = document.getElementById('temp-value');
+      const dayNightIndicator = document.getElementById('day-night-indicator');
+      tempValue.textContent = `${currentReading.temperature.toFixed(1)}°C`;
+      dayNightIndicator.textContent = `Time of Day: ${currentReading.isDaytime ? 'Day' : 'Night'}`;
+      
+      // Update nutrient levels
+      document.getElementById('nitrogen-value').textContent = `${currentReading.nitrogen.toFixed(1)} ppm`;
+      document.getElementById('phosphorus-value').textContent = `${currentReading.phosphorus.toFixed(1)} ppm`;
+      document.getElementById('potassium-value').textContent = `${currentReading.potassium.toFixed(1)} ppm`;
+    }
+    
+    // Update charts with new data
+    function updateCharts() {
+      const timeLabels = soilData.map(d => d.time);
+      
+      // Update moisture & pH chart
+      moisturePhChart.data.labels = timeLabels;
+      moisturePhChart.data.datasets[0].data = soilData.map(d => d.moisture);
+      moisturePhChart.data.datasets[1].data = soilData.map(d => d.pH);
+      moisturePhChart.update();
+      
+      // Update temperature chart
+      temperatureChart.data.labels = timeLabels;
+      temperatureChart.data.datasets[0].data = soilData.map(d => d.temperature);
+      temperatureChart.data.datasets[0].backgroundColor = soilData.map(d => 
+        d.isDaytime ? 'rgba(255, 193, 7, 0.2)' : 'rgba(78, 93, 148, 0.2)'
+      );
+      temperatureChart.update();
+    }
+    
+    // Simulate real-time data updates
+    function simulateRealTimeUpdates() {
+      setInterval(() => {
+        // Remove oldest reading
+        soilData.shift();
+        
+        // Generate new reading
+        const time = new Date();
+        const isDaytime = time.getHours() >= 6 && time.getHours() <= 18;
+        
+        const newReading = {
+          time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          moisture: 25 + Math.random() * 30,
+          pH: 6 + Math.random() * 1.5,
+          nitrogen: 10 + Math.random() * 20,
+          phosphorus: 5 + Math.random() * 15,
+          potassium: 15 + Math.random() * 25,
+          temperature: isDaytime ? 22 + Math.random() * 8 : 15 + Math.random() * 5,
+          isDaytime: isDaytime
+        };
+        
+        // Add new reading
+        soilData.push(newReading);
+        currentReading = newReading;
+        
+        // Update dashboard and charts
+        updateDashboard();
+        updateCharts();
+      }, 10000); // Update every 10 seconds
+    }
+    
+    // Initialize everything when the page loads
+    window.addEventListener('load', () => {
+      updateDashboard();
+      initCharts();
+      simulateRealTimeUpdates();
+    });
+  </script>
+</body>
+</html>
